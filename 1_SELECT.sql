@@ -173,8 +173,8 @@ WHERE SALARY BETWEEN 3500000 AND 6000000;
 -- 350만 미만 또는 600만 초과하는 직원의 사번, 이름, 급여, 부서코드, 직급코드 조회
 SELECT EMP_ID, EMP_NAME, SALARY, DEPT_CODE, JOB_CODE
 FROM EMPLOYEE
---WHERE NOT SALARY BETWEEN 3500000 AND SALARY > 6000000;
-WHERE SALARY NOT BETWEEN 3500000 AND SALARY > 6000000;
+--WHERE NOT SALARY BETWEEN 3500000 AND 6000000;
+WHERE SALARY NOT BETWEEN 3500000 AND 6000000;
 
 -- EMPLOYEE 테이블에서 고용일이 90/1/1 ~ 01/1/1인 사원의 전체 내용 조회
 SELECT *
@@ -218,4 +218,87 @@ WHERE EMP_NAME NOT LIKE '김%';
 -- EMPLOYEE 테이블에서 이메일 중 _의 앞 글자가 3자리인 이메일 주소를 가진 사원의 사번, 이름, 이메일 주소 조회
 SELECT EMP_ID, EMP_NAME, EMAIL
 FROM EMPLOYEE
-WHERE EMAIL LIKE '___%';
+WHERE EMAIL LIKE '___%';    -- 앞 글자 3자리를 뜻하는 언더바_는 와일드카드
+-- 와일드카드 문자와 패턴의 특수 문자가 동일한 경우 어떤 것이 와일드카드고 어떤 것이 특수문자인지 구분X
+-- 특수문자 자체를 데이터로 처리하기 위해 구분할 수 있는 장치 필요 = ESCAPE OPTION
+SELECT EMP_ID, EMP_NAME, EMAIL
+FROM EMPLOYEE
+WHERE EMAIL LIKE '___!_%' ESCAPE '!';
+
+-- EMPLOYEE 테이블에서 이름 끝이 '연'으로 끝나는 사원 이름 조회
+-- EMPLOYEE 테이블에서 전화번호 처음 3자리가 010이 아닌 사원의 이름, 전화번호 조회
+-- EMPLOYEE 테이블에서 메일주소 _앞이 4글자이면서 DEPT_CODE가 D9 또는 D6이고
+-- 고용일이 90/01/01~00/12/01이고, 급여가 270만 이상인 사원 전체 조회
+
+SELECT EMP_NAME
+FROM EMPLOYEE
+WHERE EMP_NAME LIKE '%연';
+
+SELECT EMP_NAME, PHONE
+FROM EMPLOYEE
+WHERE PHONE NOT LIKE '010%';
+
+SELECT *
+FROM EMPLOYEE
+WHERE EMAIL LIKE '____!_%' ESCAPE '!' AND (DEPT_CODE = 'D9' OR DEPT_CODE = 'D6') AND 
+        (HIRE_DATE BETWEEN '90/01/01' AND '00/12/01') AND SALARY >= 2700000;
+        
+-- IS NULL/ IS NOT NULL : 컬럼값에 NULL값이 들어가 있는지 여부 판별
+-- EMPLOYEE 테이블에서 보너스를 받지 않는 사원의 사번, 이름, 급여, 보너스 조회
+SELECT EMP_ID, EMP_NAME, SALARY, BONUS
+FROM EMPLOYEE
+WHERE BONUS IS NULL;
+
+-- EMPLOYEE 테이블에서 보너스를 받는 사원의 사번, 이름 급여, 보너스 조회
+SELECT EMP_ID, EMP_NAME, SALARY, BONUS
+FROM EMPLOYEE
+WHERE BONUS IS NOT NULL;
+--WHERE NOT BONUS IS NULL;
+
+-- EMPLOYEE 테이블에서 관리자도 없고 부서 배치도 받지 않은 직원의 이름, 관리자, 부서코드 조회
+-- EMPLOYEE 테이블에서 부서 배치를 받지 않았지만 보너스를 지급받는 직원의 이름, 보너스, 부서코드 조회
+
+SELECT EMP_NAME, MANAGER_ID, DEPT_CODE
+FROM EMPLOYEE
+WHERE MANAGER_ID IS NULL AND DEPT_CODE IS NULL;
+
+SELECT EMP_NAME, BONUS, DEPT_CODE
+FROM EMPLOYEE
+WHERE DEPT_CODE IS NULL AND BONUS IS NOT NULL;
+
+-- IN : 목록에 일치하는 값이 있으면 TRUE 반환
+-- D6 부서와 D9 부서원들의 이름, 부서코드, 급여 조회
+SELECT EMP_NAME, DEPT_CODE, SALARY
+FROM EMPLOYEE
+-- WHERE DEPT_CODE = 'D6' OR DEPT_CODE = 'D9'; -- AND로 하면 D6이면서 D9인 조건을 충족해야 하기 때문에 결과가 없음
+WHERE DEPT_CODE IN ('D6', 'D9');
+
+-- 직급코드가 J1, J2, J3, J4인 사람들의 이름, 직급코드, 급여 조회
+SELECT EMP_NAME, JOB_CODE, SALARY
+FROM EMPLOYEE
+-- WHERE JOB_CODE = 'J1' OR JOB_CODE = 'J2' OR JOB_CODE = 'J3' OR JOB_CODE = 'J4';
+WHERE JOB_CODE IN ('J1', 'J2', 'J3', 'J4');
+
+-- 연결 연산자 ||
+-- EMPLOYEE 테이블에서 사번, 이름, 급여를 연결하여 조회
+SELECT EMP_ID || EMP_NAME || SALARY
+FROM EMPLOYEE;
+
+SELECT EMP_ID, EMP_NAME, SALARY || '원'
+FROM EMPLOYEE;
+
+-- ORDER BY : 정렬할 때 작성하는 구문
+-- SELECT문에 가장 마지막에 작성, 실행 순서도 가장 마지막
+-- 컬럼명/별칭/컬럼순번 정렬방식 NULLS FIRST/NULLS LAST
+-- 오름차순 : ASC(기본, 생략가능) / 내림차순 : DESC(명시 필요)
+SELECT EMP_ID 사번, EMP_NAME 이름, SALARY 급여, BONUS 보너스
+FROM EMPLOYEE
+-- ORDER BY EMP_ID;
+-- ORDER BY EMP_ID DESC;
+-- ORDER BY EMP_ID ASC;
+-- ORDER BY EMP_NAME ASC;
+-- ORDER BY EMP_NAME;
+-- ORDER BY EMP_NAME DESC;
+-- ORDER BY 이름 DESC;
+-- ORDER BY 3 DESC;    -- SELECT에서의 3번째 순번을 뜻함
+ORDER BY BONUS DESC NULLS LAST;     -- NULL은 뒤로 빼줘
