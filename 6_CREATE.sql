@@ -1,0 +1,71 @@
+-- DDL : 데이터 정의언어
+-- 객체 생성(CREATE) / 수정(ALTER) / 삭제(DROP)
+
+-- 테이블 생성
+-- CREATE TABLE 테이블명(컬럼명 자료형(크기), ...);
+CREATE TABLE MEMBER(
+    MEMBER_ID VARCHAR2(10),
+    MEMBER_PWD VARCHAR2(20),
+    MEMBER_NAME VARCHAR2(30)
+);
+
+COMMENT ON COLUMN MEMBER.MEMBER_ID IS '회원 아이디';
+COMMENT ON COLUMN MEMBER.MEMBER_PWD IS '회원 비밀번호';
+COMMENT ON COLUMN MEMBER.MEMBER_NAME IS '회원 이름';
+
+SELECT *
+FROM USER_TAB_COLUMNS
+WHERE TALBE_NAME = 'MEMBER';
+-- USER_TAB_COLUMN : 컬럼과 관련된 정보
+
+DESC MEMBER;
+-- DESC : 테이블 구조
+
+-- 제약 조건(CONSTRAINTS)
+-- 테이블 작성시 각 컬럼에 대해 값 기록에 대한 제약조건 설정 가능
+-- 데이터 무결성 보장을 목적으로 함
+-- 데이터 무결성 : 데이터의 정확성, 일관성, 유효성 보장
+-- 제약조건은 테이블을 처음 생성할 때 지정해줘도 되고 만들고 나서 지정해도 됨
+
+
+DESC USER_CONSTRAINTS;
+-- USER_CONSTRAINTS : 사용자가 작성한 제약조건을 확인하는 뷰
+SELECT * FROM USER_CONSTRAINTS;
+-- 제약 조건에도 이름이 들어갈 수 있다(5교시 2시 9분)
+
+SELECT * FROM USER_CONS_COLUMNS;
+-- USER_CONS_COLUMNS : 제약조건이 걸려 있는 컬럼을 확인하는 뷰
+
+-- NOT NULL : 컬럼에 반드시 값을 기록하게 하는 제약조건
+CREATE TABLE USER_NOCONST(
+    USER_NO NUMBER,
+    USER_ID VARCHAR2(20),
+    USER_PWD VARCHAR2(30),
+    USER_NAME VARCHAR2(30),
+    GENDER VARCHAR2(10),
+    PHONE VARCHAR2(30),
+    EMAIL VARCHAR2(50)
+);
+
+INSERT INTO USER_NOCONST
+VALUES(1, 'user01', 'pass01', '강건강', '남', '010-1111-2222', 'kang123@kh.or.kr');
+
+INSERT INTO USER_NOCONST
+VALUES(2, NULL, NULL, NULL, NULL, NULL, NULL);
+
+CREATE TABLE USER_NOTNULL(
+    USER_NO NUMBER NOT NULL, -- 컬럼레벨에서 NOT NULL 제약조건 넣어줌, 
+    USER_ID VARCHAR2(20) NOT NULL,
+    USER_PWD VARCHAR2(30) NOT NULL,
+    USER_NAME VARCHAR2(30) NOT NULL,
+    GENDER VARCHAR2(10),
+    PHONE VARCHAR2(30),
+    EMAIL VARCHAR2(50)
+);
+
+INSERT INTO USER_NOTNULL
+VALUES(1, 'user01', 'pass01', '강건강', '남', '010-1111-2222', 'kang123@kh.or.kr');
+
+INSERT INTO USER_NOTNULL
+VALUES(2, NULL, NULL, NULL, NULL, NULL, NULL);
+-- ORA-01400: NULL을 ("KH"."USER_NOTNULL"."USER_ID") 안에 삽입할 수 없습니다
